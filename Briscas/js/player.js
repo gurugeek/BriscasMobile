@@ -5,6 +5,7 @@
 	function Player () {
 		this.id = null;
 		this.name = "";
+		this.hasPlay = null;
 		this.hand = new Hand();
 		this.pile = new Array();
 
@@ -22,6 +23,9 @@
 		}
 		this.setId = function(id){
 			this.id = id;
+		}
+		this.setPlayStatus = function(status){
+			this.hasPlay = status;
 		}
 		/*
 		 * Adds a card won to a player's pile

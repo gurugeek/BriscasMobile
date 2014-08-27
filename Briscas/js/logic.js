@@ -96,26 +96,53 @@ function displayHand() {
 }
 
 //
-function playCard() {
+function playCard(){
 	$('.card').on("click", function(){
 		var thePlayer = $(this).parent().attr("data-player-id");
-		var theCard = {
-			name : $(this).attr("data-card-name"),
-			suit : $(this).attr("data-card-suit"),
-			number : Number($(this).attr("data-card-number")),
-			value : Number($(this).attr("data-card-value"))
+		if(playerHasPlay(thePlayer)){
+			console.log("Player "+thePlayer+" has already made a play");
+		} else{
+			var theCard = {
+				name : $(this).attr("data-card-name"),
+				suit : $(this).attr("data-card-suit"),
+				number : Number($(this).attr("data-card-number")),
+				value : Number($(this).attr("data-card-value"))
+			}
+
+			field.playCard(thePlayer, theCard); // add card to field
+			players[thePlayer].getHand().removeCard(theCard); // remove card from hand
+			$(this).remove(); // remove card from GUI
+
+			disableNewPlay(thePlayer);
+			compareCards();
 		}
-
-		field.playCard(thePlayer, theCard); // add card to field
-		players[thePlayer].getHand().removeCard(theCard); // remove card from hand
-		$(this).remove(); // remove card from GUI
-
-		compareCards();
 	});
 }
 
+// checks if player has made a play
+// returns boolean value of resulting check
+function playerHasPlay(id){
+	for(var i = 0; i < players.length; i++){
+		if(players[i].id == id && players[i].hasPlay){
+			return true;
+		} else{
+			return false;
+		}
+	}
+}
+
+// disables player from playing a card if he has already made a play
+function disableNewPlay(id){
+	for(var i = 0; i < players.length; i++){
+		if(players[i].id == id){
+			players[i].setPlayStatus(true);
+			return; //so it does not loop through all players
+		}
+	}
+}
+
 //
-function compareCards() {
+function compareCards(){
 	if(field.getCardCount() == 2){
 		field.showPlayedCards(currentTurn);
 		/*	winning_play = {
@@ -158,7 +185,16 @@ function compareCards() {
 
 		//refresh players hands to show added cards
 		//displayHand(); //freezes logic for some reason
+
+		enableNewPlays();
 /* End of code that probably dsnt go here */
+	}
+}
+
+// reset play status flag so players can again play a card
+function enableNewPlays(){
+	for(var i = 0; i < players.length; i++){
+		players[i].setPlayStatus(false);
 	}
 }
 
